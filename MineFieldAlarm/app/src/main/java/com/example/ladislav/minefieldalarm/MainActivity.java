@@ -8,8 +8,6 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO Make MineFieldTable class
-    //TODO Make MineField class
     //TODO Make Service that tracks location and compares to Geolocation
     //TODO Make a sound notification for entering danger area!
     //TODO Make possible to work with 100+ geofences, not only up to 100
