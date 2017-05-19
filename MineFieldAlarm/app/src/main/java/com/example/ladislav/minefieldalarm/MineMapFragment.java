@@ -10,21 +10,24 @@ import android.view.ViewGroup;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Marker;
 
 
 /**
- * Fragment that holds GoogleMap, receives location updates and shows them on it
- * And draws geofences on the map. It is used as part of MainActivity
+ * Fragment that is used as part of MainActivity.
+ * It receives location updates from LocationTrackerService
+ * and sets the marker on GoogleMap along with geofences.
  */
+
+// TODO add broadcast receiver to receive map updates from LocationTrackerService !
+// TODO show user location
+// TODO show geofences
 
 public class MineMapFragment extends Fragment {
 
-    protected SupportMapFragment mapFragment;
-    protected GoogleMap map;
-
-    // TODO add broadcast receiver to receive map updates from service !
-    // TODO show user location (add map marker)
-    // TODO show geofences on map
+    private SupportMapFragment mapFragment;
+    private GoogleMap map;
+    private Marker locationMarker;
 
     @Nullable
     @Override

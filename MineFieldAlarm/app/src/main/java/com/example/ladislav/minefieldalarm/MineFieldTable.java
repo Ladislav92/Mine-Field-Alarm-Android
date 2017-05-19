@@ -1,12 +1,12 @@
 package com.example.ladislav.minefieldalarm;
 
-import com.google.android.gms.location.Geofence;
-
 import java.util.HashMap;
 
 /**
- * Created by Ladislav on 5/19/2017.
+ * Serves as storage to all known minefields and their exact location.
  */
+
+// TODO read data from file that holds location data of mine fields and store it in map
 
 public class MineFieldTable {
 
