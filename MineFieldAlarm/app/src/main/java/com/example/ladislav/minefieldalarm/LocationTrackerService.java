@@ -23,10 +23,9 @@ import com.google.android.gms.location.LocationServices;
 /**
  * Background user location tracker. Uses Google API client to track and update user location,
  * Compares location coordinates to mine field coordinates and dynamically makes geofences.
- * On geofence enter, it turns on alarm and re-starts main activity showing location and minefield !.
+ * On geofence enter, it turns on alarm and re-starts main activity showing location and minefield !
  */
 
-// TODO Track and update location,
 // TODO compare it to MineFieldTable locations,
 // TODO find 100 closest to current location and add to geofence
 // TODO On geofence enter send notification, turn alarm and start activity ?!
@@ -81,6 +80,7 @@ public class LocationTrackerService extends Service
     @Override   //google api client
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "Connection suspended");
+        googleApiClient.connect();
     }
 
     @Override   //onConnectionFailedListener
@@ -88,11 +88,15 @@ public class LocationTrackerService extends Service
         Log.i(TAG, "Connection failed: " + connectionResult.getErrorCode());
     }
 
-
     @Override   //location request
     public void onLocationChanged(Location location) {
         Log.i(TAG, "Location changed to: " + location.toString());
         //TODO update geofences
+        updateGeofences();
+    }
+
+    private void updateGeofences() {
+        Log.d(TAG, "Updating geofences");
     }
 
     @Override   //result callback

@@ -8,17 +8,16 @@ import java.util.HashMap;
  */
 
 // TODO read data from file that holds location data of mine fields and store it in map
-// TODO consider SINGLETON
 
 public class MineFieldTable {
 
     private HashMap<String, MineField> mineFields;
 
     public void initialise() {
-        //TODO add some data to table
+        //TODO add some "wild" data to table
         // TODO read data from file this is just putting one test item
-
     }
+
     public MineFieldTable getInstance() {
         return null;
     }
