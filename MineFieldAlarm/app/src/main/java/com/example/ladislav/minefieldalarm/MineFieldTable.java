@@ -1,6 +1,10 @@
 package com.example.ladislav.minefieldalarm;
 
-import java.util.HashMap;
+import com.google.android.gms.location.Geofence;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Singleton class.
@@ -11,15 +15,23 @@ import java.util.HashMap;
 
 public class MineFieldTable {
 
-    private HashMap<String, MineField> mineFields;
+    private List<MineField> mineFields;
 
-    public void initialise() {
-        //TODO add some "wild" data to table
-        // TODO read data from file this is just putting one test item
+    private MineFieldTable instance = new MineFieldTable();
+
+    private MineFieldTable() {
+        mineFields = new ArrayList<>();
+        mineFields.add(new MineField("First", 10.0, 10.0, 100, Geofence.GEOFENCE_TRANSITION_ENTER));
+        mineFields.add(new MineField("Second", 10.0, 10.0, 100, Geofence.GEOFENCE_TRANSITION_ENTER));
+        mineFields.add(new MineField("Third", 10.0, 10.0, 100, Geofence.GEOFENCE_TRANSITION_ENTER));
+    }
+
+    public List<MineField> getMineFields() {
+        return Collections.unmodifiableList(mineFields);
     }
 
     public MineFieldTable getInstance() {
-        return null;
+        return instance;
     }
 
 }

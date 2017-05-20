@@ -19,6 +19,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setFragment(new MineMapFragment());
+
+        // TODO start service in the foreground
     }
 
     protected void setFragment(Fragment fragment) {
