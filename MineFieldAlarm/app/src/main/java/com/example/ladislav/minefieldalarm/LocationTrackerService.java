@@ -23,10 +23,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 /**
  * Background user location tracker. Uses Google API client to track and update user location,
@@ -34,12 +31,11 @@ import java.util.TreeSet;
  * On geofence enter, it turns on alarm and re-starts main activity showing location and minefield !
  */
 
-// TODO compare it to MineFieldTable locations,
-// TODO find 100 closest to current location and add to geofence
-// TODO On geofence enter send notification, turn alarm and start activity ?!
-// TODO send message to MapFragment about location and geofences
+// TODO On geofence enter send notification, turn alarm and start activity ?
+// TODO send message to MapFragment about location and geofences to display them when opened
 
-//TODO Think of IntentService
+
+// TODO Manage life cycle of service: make option to restart itself if killed !
 
 public class LocationTrackerService extends Service
         implements GoogleApiClient.ConnectionCallbacks,
@@ -47,33 +43,38 @@ public class LocationTrackerService extends Service
         ResultCallback<Status>,
         GoogleApiClient.OnConnectionFailedListener {
 
-    private static String TAG = "LOCATION_TRACKER";
+    private static String TAG = "MineFieldAlarm";
 
     public static final double R = 6372.8;
     private static final double CHECK_PERIMETER = 5.0;
     public static final int UPDATE_INTERVAL = 10000;
     public static final int FASTEST_UPDATE_INTERVAL = 1000;
 
-    private MineFieldTable mineFields; // all mine fields
+    private MineFieldTable mineFields;
     private List<MineField> closestFields;
+
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private PendingIntent pendingIntent;
 
-    @Override   //service
+    @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "LocationTrackerService onStartCommand");
 
         buildGoogleApiClient();
+        createLocationRequest();
         googleApiClient.connect();
+
         return START_STICKY;
     }
 
-    @Override   //service
+    @Override
     public void onCreate() {
-        mineFields.getInstance();
+        Log.i(TAG, "LocationTrackerService onCreate");
+        mineFields = MineFieldTable.getInstance();
     }
 
-    @Override   //google api client
+    @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i(TAG, "Connected to GoogleApiClient, starting location updates... ");
 
@@ -91,37 +92,47 @@ public class LocationTrackerService extends Service
                 googleApiClient, locationRequest, this);
     }
 
-
-    @Override   //google api client
+    @Override
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "Connection suspended");
 
         googleApiClient.connect();
     }
 
-    @Override   //onConnectionFailedListener
+    @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i(TAG, "Connection failed: " + connectionResult.getErrorCode());
     }
 
-    @Override   //location request
+    @Override
     public void onLocationChanged(Location location) {
-        Log.i(TAG, "Location changed to: " + location.toString());
+        Log.i(TAG, "LocationTrackerService: Location changed to: " + location.toString());
 
-        updateGeofences(location);
+        if (location != null) {
+            updateGeofences(location);
+        }
     }
 
+    /**
+     * Updates geofences that needs to be tracked based on
+     * distance between user and mine fields.
+     * It adds all the minefield in are of 5 kilometers in perimeter
+     * to active geofences.
+     * If geofence number passes 100, it calculates 100 nearest and
+     * adds them. Method is being called on every location change.
+     *
+     * @param location used to get users latitude and longitude
+     */
     private void updateGeofences(Location location) {
-        Log.d(TAG, "Updating geofences");
+        Log.d(TAG, "LocationTrackerService: Updating geofences");
 
         double userLatitude = location.getLatitude();
         double userLongitude = location.getLongitude();
 
-        pendingIntent = requestPendingIntent();
-
-        if (!closestFields.isEmpty()) {
+        if (closestFields != null && !closestFields.isEmpty()) {
+            Log.i(TAG, "LocationTrackerService: removing geofences.");
             LocationServices.GeofencingApi.removeGeofences(googleApiClient,
-                    pendingIntent).setResultCallback(this);
+                    requestPendingIntent()).setResultCallback(this);
         }
 
         closestFields = new ArrayList<>();
@@ -135,19 +146,23 @@ public class LocationTrackerService extends Service
 
         if (closestFields.size() > 99) {
             //TODO sort all by distance and remove the furthest
-
         }
 
+        pendingIntent = requestPendingIntent();
+
         GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
+
 
         for (MineField mineField : closestFields) {
             geofencingRequestBuilder.addGeofence(mineField.toGeofence());
         }
 
+        Log.i(TAG, "LocationTrackerService: building Geofencing request ");
         GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
+            Log.i(TAG, "LocationTrackerService: location permission NOT granted ");
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -157,11 +172,28 @@ public class LocationTrackerService extends Service
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        Log.i(TAG, "LocationTrackerService: adding geofences. ");
         LocationServices.GeofencingApi.addGeofences(googleApiClient,
                 geofencingRequest, pendingIntent).setResultCallback(this);
     }
 
+    /**
+     * Calculates distance between 2 locations (user and minefield in my case)
+     * Uses Haversine formula for calculation:
+     * <p>
+     * "The haversine formula determines the great-circle
+     * distance between two points on a sphere given their longitudes and latitudes.
+     * Important in navigation, it is a special case of a more general formula in spherical
+     * trigonometry, the law of haversines, that relates the sides and angles of spherical triangles."
+     *
+     * @param lat1 latitude of first location
+     * @param lon1 longitude of first location
+     * @param lat2 latitude of second location
+     * @param lon2 longitude of second location
+     * @return double distance in kilometers
+     */
     private double distanceBetween(double lat1, double lon1, double lat2, double lon2) {
+
         double dLat = Math.toRadians(lat2 - lat1);
         double dLon = Math.toRadians(lon2 - lon1);
         lat1 = Math.toRadians(lat1);
@@ -171,44 +203,59 @@ public class LocationTrackerService extends Service
                 Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
         double c = 2 * Math.asin(Math.sqrt(a));
         return R * c;
-    }
 
+    }
 
     private PendingIntent requestPendingIntent() {
-
+        Log.i(TAG, "LocationTrackerService: requesting pending intent.");
         if (null != pendingIntent) {
-
             return pendingIntent;
-        } else {
-
-            Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
-            return PendingIntent.getService(this, 0, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-
         }
+
+        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
+        return PendingIntent.getService(this, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
     }
 
+    // TODO implement me ! ! !
     @Override   //result callback
     public void onResult(@NonNull Status status) {
 
     }
 
 
-    protected synchronized void buildGoogleApiClient() {
+    /**
+     * Helper method that uses GoogleApiClient Builder to instantiate
+     * the client.
+     */
+    private synchronized void buildGoogleApiClient() {
         Log.i(TAG, "Building GoogleApiClient");
         googleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API).build();
-        createLocationRequest();
     }
 
-    protected void createLocationRequest() {
+    /**
+     * Helper method that instantiates LocationRequest
+     * and sets update interval and location accuracy.
+     */
+    private void createLocationRequest() {
+        Log.i(TAG, "LocationTrackerService: Creating location request.");
+
         locationRequest = new LocationRequest();
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
+
+    /**
+     * Method that has to be overridden.
+     *
+     * @param intent
+     * @return null
+     */
 
     @Nullable
     @Override    // service

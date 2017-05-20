@@ -25,6 +25,9 @@
 
         </service>
 
+        <service android:enabled="true" android:name=".GeofenceTransitionsIntentService">
+
+        </service>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value=" AIzaSyDxol45DPGS-TXXhwL6mfIQ2c07YUj9eFM"/>

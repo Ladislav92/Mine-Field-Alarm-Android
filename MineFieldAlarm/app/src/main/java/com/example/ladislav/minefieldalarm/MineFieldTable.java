@@ -17,20 +17,23 @@ public class MineFieldTable {
 
     private List<MineField> mineFields;
 
-    private MineFieldTable instance = new MineFieldTable();
+    private static MineFieldTable instance = new MineFieldTable();
 
     private MineFieldTable() {
+        // 60.008557, 30.391760 Dormitory, "Grazhdyanski Prospekt 30"
+        // 60.006726, 30.372550 In front of main Politeh building
+        // 59.999755, 30.364346 Park across 9k.
         mineFields = new ArrayList<>();
-        mineFields.add(new MineField("First", 10.0, 10.0, 100, Geofence.GEOFENCE_TRANSITION_ENTER));
-        mineFields.add(new MineField("Second", 10.0, 10.0, 100, Geofence.GEOFENCE_TRANSITION_ENTER));
-        mineFields.add(new MineField("Third", 10.0, 10.0, 100, Geofence.GEOFENCE_TRANSITION_ENTER));
+        mineFields.add(new MineField("First", 60.008557, 30.391760, 100, Geofence.GEOFENCE_TRANSITION_ENTER));
+        mineFields.add(new MineField("Second", 59.999755, 30.364346, 100, Geofence.GEOFENCE_TRANSITION_ENTER));
+        mineFields.add(new MineField("Third", 60.006726, 30.372550, 100, Geofence.GEOFENCE_TRANSITION_ENTER));
     }
 
     public List<MineField> getMineFields() {
         return Collections.unmodifiableList(mineFields);
     }
 
-    public MineFieldTable getInstance() {
+    public static MineFieldTable getInstance() {
         return instance;
     }
 
