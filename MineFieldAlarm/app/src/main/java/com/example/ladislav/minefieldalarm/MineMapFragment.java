@@ -8,10 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.Marker;
 
+import java.util.List;
 
 /**
  * Fragment that is used as part of MainActivity.
@@ -19,15 +21,16 @@ import com.google.android.gms.maps.model.Marker;
  * and sets the marker on GoogleMap along with geofences.
  */
 
-// TODO add broadcast receiver to receive map updates from LocationTrackerService !
-// TODO show user location
-// TODO show geofences
-
 public class MineMapFragment extends Fragment {
 
     private SupportMapFragment mapFragment;
     private GoogleMap map;
-    private Marker locationMarker;
+    private Marker userLocation;
+    private List<MineField> mineFields; // TODO draw all fields everytime ?
+
+    // TODO add broadcast receiver to receive map updates from LocationTrackerService ?
+    // TODO show user location
+    // TODO show geofences
 
     @Nullable
     @Override

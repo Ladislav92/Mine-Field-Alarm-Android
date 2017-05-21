@@ -22,7 +22,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,9 +30,7 @@ import java.util.List;
  * On geofence enter, it turns on alarm and re-starts main activity showing location and minefield !
  */
 
-// TODO On geofence enter send notification, turn alarm and start activity ?
 // TODO send message to MapFragment about location and geofences to display them when opened
-
 
 // TODO Manage life cycle of service: make option to restart itself if killed !
 
@@ -45,8 +42,6 @@ public class LocationTrackerService extends Service
 
     private static String TAG = "MineFieldAlarm";
 
-    public static final double R = 6372.8;
-    private static final double CHECK_PERIMETER = 5.0;
     public static final int UPDATE_INTERVAL = 10000;
     public static final int FASTEST_UPDATE_INTERVAL = 1000;
 
@@ -110,6 +105,7 @@ public class LocationTrackerService extends Service
 
         if (location != null) {
             updateGeofences(location);
+            //notifyMapFragment(location, closestFields); or notifyMapFragment(location)
         }
     }
 
@@ -135,23 +131,11 @@ public class LocationTrackerService extends Service
                     requestPendingIntent()).setResultCallback(this);
         }
 
-        closestFields = new ArrayList<>();
-
-        for (MineField mineField : mineFields.getMineFields()) {
-            if (distanceBetween(userLatitude, userLongitude,
-                    mineField.getLatitude(), mineField.getLongitude()) <= CHECK_PERIMETER) {
-                closestFields.add(mineField);
-            }
-        }
-
-        if (closestFields.size() > 99) {
-            //TODO sort all by distance and remove the furthest
-        }
+        closestFields = MineFieldTable.getInstance().getClosestFieldsTo(userLatitude, userLongitude);
 
         pendingIntent = requestPendingIntent();
 
         GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
-
 
         for (MineField mineField : closestFields) {
             geofencingRequestBuilder.addGeofence(mineField.toGeofence());
@@ -177,35 +161,6 @@ public class LocationTrackerService extends Service
                 geofencingRequest, pendingIntent).setResultCallback(this);
     }
 
-    /**
-     * Calculates distance between 2 locations (user and minefield in my case)
-     * Uses Haversine formula for calculation:
-     * <p>
-     * "The haversine formula determines the great-circle
-     * distance between two points on a sphere given their longitudes and latitudes.
-     * Important in navigation, it is a special case of a more general formula in spherical
-     * trigonometry, the law of haversines, that relates the sides and angles of spherical triangles."
-     *
-     * @param lat1 latitude of first location
-     * @param lon1 longitude of first location
-     * @param lat2 latitude of second location
-     * @param lon2 longitude of second location
-     * @return double distance in kilometers
-     */
-    private double distanceBetween(double lat1, double lon1, double lat2, double lon2) {
-
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
-        lat1 = Math.toRadians(lat1);
-        lat2 = Math.toRadians(lat2);
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.sin(dLon / 2) *
-                Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2);
-        double c = 2 * Math.asin(Math.sqrt(a));
-        return R * c;
-
-    }
-
     private PendingIntent requestPendingIntent() {
         Log.i(TAG, "LocationTrackerService: requesting pending intent.");
         if (null != pendingIntent) {
@@ -223,7 +178,6 @@ public class LocationTrackerService extends Service
     public void onResult(@NonNull Status status) {
 
     }
-
 
     /**
      * Helper method that uses GoogleApiClient Builder to instantiate
@@ -249,13 +203,6 @@ public class LocationTrackerService extends Service
         locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
-
-    /**
-     * Method that has to be overridden.
-     *
-     * @param intent
-     * @return null
-     */
 
     @Nullable
     @Override    // service

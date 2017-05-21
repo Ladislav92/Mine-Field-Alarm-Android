@@ -16,7 +16,7 @@ import com.google.android.gms.location.GeofencingEvent;
 import java.util.List;
 
 /**
- * Created by Ladislav on 5/20/2017.
+ * Helper class that listens for geofence transitions and triggers notification alarm.
  */
 
 public class GeofenceTransitionsIntentService extends IntentService{
@@ -40,27 +40,27 @@ public class GeofenceTransitionsIntentService extends IntentService{
         Log.i(TAG, "GeofenceTransitionIntentService: getting geofence transition. ");
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-                geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+        //TODO write the location name(id) instead of entered/exited the location
+        List<Geofence> triggered = geofencingEvent.getTriggeringGeofences();
 
-            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
-                showNotification("Entered", "Entered the Location");
-            }
-            else if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-                showNotification("Exited", "Exited the Location");
-            } else {
-                showNotification("Error", "Error");
-            }
-        } else {
-            Log.e(TAG,"Error with geofence");
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
+            showNotification("Entered", "Entered the Location");
         }
+        else if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+            showNotification("Exited", "Exited the Location");
+        } else {
+            showNotification("Error", "Error");
+        }
+
+
     }
 
     // TODO make app go wild, vibrations, buzzing, alarm sound whatever?!
+    // TODO different type (sound) of notification based on enter/exit event
     public void showNotification(String text, String bigText) {
 
         Log.i(TAG, "GeofenceTransitionService: showing notification ");
-        
+
         NotificationManager notificationManager =
                 (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
@@ -70,6 +70,8 @@ public class GeofenceTransitionsIntentService extends IntentService{
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Create and send a notification
+        // TODO set sound
+        // TODO change icon
         Notification notification = new NotificationCompat.Builder(this)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(text)

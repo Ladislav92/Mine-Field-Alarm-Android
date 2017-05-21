@@ -6,8 +6,10 @@ import com.google.android.gms.location.Geofence;
 
 /**
  * This simple class that represents actual mine field with getters, setters
- * and support for converting it to Geofence
+ * and method for converting it to Geofence
  */
+
+//TODO Think of parceable so it can be sent trough intent?
 
 public class MineField {
 
@@ -20,20 +22,18 @@ public class MineField {
     private final double latitude;
     private final double longitude;
     private final float radius; // for now only radius border for simplicity
-    private int transitionType; // probably final value: on enter only ???
 
-    public MineField(String ID, double latitude, double longitude, float radius, int transitionType) {
+    public MineField(String ID, double latitude, double longitude, float radius) {
         this.ID = ID;
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius = radius;
-        this.transitionType = transitionType;
 
     }
 
     public Geofence toGeofence() {
         return new Geofence.Builder().setRequestId(ID)
-                .setTransitionTypes(transitionType)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
                 .setCircularRegion(latitude, longitude, radius)
                 .setExpirationDuration(GEOFENCE_EXPIRATION_IN_MILLISECONDS)
                 .setLoiteringDelay(GEOFENCE_LOITERING_DELAY).build();
@@ -53,14 +53,6 @@ public class MineField {
 
     public float getRadius() {
         return radius;
-    }
-
-    public int getTransitionType() {
-        return transitionType;
-    }
-
-    public void setTransitionType(int transitionType) {
-        this.transitionType = transitionType;
     }
 
 }

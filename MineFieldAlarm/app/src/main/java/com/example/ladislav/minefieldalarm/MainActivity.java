@@ -17,7 +17,7 @@ public class MainActivity extends AppCompatActivity {
     //TODO Add about "UDAS" organisation activity / fragment
     //TODO Add contact us activity / fragment
 
-    //TODO manage life cycle of activity
+    //TODO manage life cycle of activity better
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
