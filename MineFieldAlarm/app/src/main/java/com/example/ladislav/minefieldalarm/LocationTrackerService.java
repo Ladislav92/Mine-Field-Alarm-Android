@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -105,10 +106,20 @@ public class LocationTrackerService extends Service
 
         if (location != null) {
             updateGeofences(location);
-            //notifyMapFragment(location, closestFields); or notifyMapFragment(location)
+            notifyMapFragment(location);
         }
     }
 
+    public void notifyMapFragment(Location location) {
+        Log.i(TAG, "LocationTrackerService: Notifying map fragment for location update.");
+
+        Intent lbcIntent = new Intent("UserLocationChange");
+
+        lbcIntent.putExtra("latitude", location.getLatitude());
+        lbcIntent.putExtra("longitude", location.getLongitude());
+
+        LocalBroadcastManager.getInstance(this).sendBroadcast(lbcIntent);
+    }
     /**
      * Updates geofences that needs to be tracked based on
      * distance between user and mine fields.

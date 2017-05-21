@@ -38,8 +38,8 @@ public class MineFieldTable {
         return instance;
     }
 
-    //TODO consider returning unmodifiableList
     public List<MineField> getClosestFieldsTo(double latitude, double longitude) {
+
         List<MineField> closestFields = new ArrayList<>();
 
         for (MineField mineField : mineFields) {
@@ -53,7 +53,7 @@ public class MineFieldTable {
             //TODO sort all by distance and remove the furthest
         }
 
-        return closestFields;
+        return Collections.unmodifiableList(closestFields);
     }
 
     /**
