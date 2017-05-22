@@ -103,6 +103,7 @@ public class MineMapFragment extends Fragment {
 
             googleMap.addCircle(circleOptions);
         }
+
     }
 
 
@@ -139,6 +140,7 @@ public class MineMapFragment extends Fragment {
 
             LatLng latLng = new LatLng(latitude, longitude);
             userPositionMarker.setPosition(latLng);
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         }
     }
