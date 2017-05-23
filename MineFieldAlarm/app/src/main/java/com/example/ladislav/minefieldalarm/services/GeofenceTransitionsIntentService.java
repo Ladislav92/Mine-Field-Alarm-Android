@@ -1,4 +1,4 @@
-package com.example.ladislav.minefieldalarm;
+package com.example.ladislav.minefieldalarm.services;
 
 import android.app.IntentService;
 import android.app.Notification;
@@ -10,6 +10,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.example.ladislav.minefieldalarm.R;
+import com.example.ladislav.minefieldalarm.activities.MainActivity;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
@@ -51,8 +53,6 @@ public class GeofenceTransitionsIntentService extends IntentService{
         } else {
             showNotification("Error", "Error");
         }
-
-
     }
 
     // TODO make app go wild, vibrations, buzzing, alarm sound whatever?!

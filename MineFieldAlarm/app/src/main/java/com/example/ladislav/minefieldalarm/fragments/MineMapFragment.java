@@ -1,4 +1,4 @@
-package com.example.ladislav.minefieldalarm;
+package com.example.ladislav.minefieldalarm.fragments;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,6 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.ladislav.minefieldalarm.R;
+import com.example.ladislav.minefieldalarm.model.MineField;
+import com.example.ladislav.minefieldalarm.model.MineFieldTable;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,6 +44,9 @@ public class MineMapFragment extends Fragment {
     private GoogleMap googleMap;
     private LocationReceiver receiver;
     private Marker userPositionMarker;
+
+    //TODO on pause and destroy maybe unregister receiver
+    // TODO when marker is updated once, do not move to it every time (it's annoying)
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -84,14 +90,12 @@ public class MineMapFragment extends Fragment {
                     MineMapFragment.this.googleMap = googleMap;
                     MineMapFragment.this.googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                     displayMineFields();
+
                 }
             });
         }
     }
 
-    /**
-     * Draws all the minefields on the google map.
-     */
     private void displayMineFields() {
 
         for (MineField mineField : mineFields) {
@@ -105,7 +109,6 @@ public class MineMapFragment extends Fragment {
         }
 
     }
-
 
     private class LocationReceiver extends BroadcastReceiver {
 
@@ -140,8 +143,8 @@ public class MineMapFragment extends Fragment {
 
             LatLng latLng = new LatLng(latitude, longitude);
             userPositionMarker.setPosition(latLng);
-            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            MineMapFragment.this.googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
         }
     }
 }

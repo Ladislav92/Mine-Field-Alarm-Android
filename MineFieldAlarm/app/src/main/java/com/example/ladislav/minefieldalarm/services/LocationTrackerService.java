@@ -1,4 +1,4 @@
-package com.example.ladislav.minefieldalarm;
+package com.example.ladislav.minefieldalarm.services;
 
 import android.Manifest;
 import android.app.PendingIntent;
@@ -14,6 +14,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
+import com.example.ladislav.minefieldalarm.model.MineField;
+import com.example.ladislav.minefieldalarm.model.MineFieldTable;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
@@ -30,8 +32,6 @@ import java.util.List;
  * Compares location coordinates to mine field coordinates and dynamically makes geofences.
  * On geofence enter, it turns on alarm and re-starts main activity showing location and minefield !
  */
-
-// TODO send message to MapFragment about location and geofences to display them when opened
 
 // TODO Manage life cycle of service: make option to restart itself if killed !
 
@@ -104,10 +104,8 @@ public class LocationTrackerService extends Service
     public void onLocationChanged(Location location) {
         Log.i(TAG, "LocationTrackerService: Location changed to: " + location.toString());
 
-        if (location != null) {
-            updateGeofences(location);
-            notifyMapFragment(location);
-        }
+        updateGeofences(location);
+        notifyMapFragment(location);
     }
 
     public void notifyMapFragment(Location location) {
