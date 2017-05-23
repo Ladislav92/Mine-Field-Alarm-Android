@@ -30,9 +30,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value=" AIzaSyDxol45DPGS-TXXhwL6mfIQ2c07YUj9eFM" />
 
-        <activity android:name=".activities.AboutAppActivity" />
-        <activity android:name=".activities.AboutOrganisationActivity" />
-        <activity android:name=".activities.OptionsActivity"></activity>
+        <activity android:name=".activities.AboutAppActivity"
+            android:parentActivityName=".activities.MainActivity"/>
+        <activity android:name=".activities.AboutOrganisationActivity"
+            android:parentActivityName=".activities.MainActivity"/>
+        <activity android:name=".activities.SettingsActivity"
+            android:parentActivityName=".activities.MainActivity">
+        </activity>
     </application>
 
 </manifest>

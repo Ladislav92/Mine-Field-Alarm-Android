@@ -10,8 +10,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -44,7 +48,7 @@ public class MineMapFragment extends Fragment {
     private GoogleMap googleMap;
     private LocationReceiver receiver;
     private Marker userPositionMarker;
-
+    private Toolbar toolbar;
     //TODO on pause and destroy maybe unregister receiver
     // TODO when marker is updated once, do not move to it every time (it's annoying)
 
@@ -52,6 +56,7 @@ public class MineMapFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mineFields = MineFieldTable.getInstance().getMineFields();
+        setHasOptionsMenu(true);
 
         LocalBroadcastManager lbc = LocalBroadcastManager.getInstance(this.getContext());
         receiver = new LocationReceiver(this);
@@ -70,7 +75,6 @@ public class MineMapFragment extends Fragment {
                 .beginTransaction();
         fragmentTransaction.add(R.id.map_container, mapFragment);
         fragmentTransaction.commit();
-
         return root;
     }
 

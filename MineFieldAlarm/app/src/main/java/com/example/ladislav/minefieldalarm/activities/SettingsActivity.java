@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import com.example.ladislav.minefieldalarm.R;
 
-public class OptionsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     //TODO think about FragmentActivity?
 
