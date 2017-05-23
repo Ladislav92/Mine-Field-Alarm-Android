@@ -1,6 +1,10 @@
 package com.example.ladislav.minefieldalarm.activities;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -10,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.ladislav.minefieldalarm.services.LocationTrackerService;
 import com.example.ladislav.minefieldalarm.fragments.MineMapFragment;
@@ -33,14 +38,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setFragment(new MineMapFragment());
 
-//        toolbar = (Toolbar) findViewById(R.id.tool_bar);
-//        setSupportActionBar(toolbar);
-//        toolbar.setTitle("Test");
 
         // TODO start service to run in the foreground
         // TODO Make static instance of LocationTrackerService for access from SettingsActivity?
         Log.i(TAG, "MainActivity: starting LocationTrackerService");
-        startService(new Intent(this, LocationTrackerService.class));
+        if (!isMyServiceRunning(LocationTrackerService.class)) {
+            startService(new Intent(this, LocationTrackerService.class));
+        }
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

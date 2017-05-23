@@ -7,7 +7,10 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +25,7 @@ import android.view.ViewGroup;
 import com.example.ladislav.minefieldalarm.R;
 import com.example.ladislav.minefieldalarm.model.MineField;
 import com.example.ladislav.minefieldalarm.model.MineFieldTable;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,25 +48,29 @@ import java.util.List;
 public class MineMapFragment extends Fragment {
 
     private static final String TAG = "MineFieldAlarm";
+    private static final String LOCATION_CHANGE_FILTER = "UserLocationChange";
 
     private List<MineField> mineFields;
     private SupportMapFragment mapFragment;
     private GoogleMap googleMap;
     private LocationReceiver receiver;
     private Marker userPositionMarker;
-    private Toolbar toolbar;
+    private CameraUpdate cameraUpdate;
+
+    private boolean markerUpdated;
     //TODO on pause and destroy maybe unregister receiver
     // TODO when marker is updated once, do not move to it every time (it's annoying)
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mineFields = MineFieldTable.getInstance().getMineFields();
         setHasOptionsMenu(true);
-
-        LocalBroadcastManager lbc = LocalBroadcastManager.getInstance(this.getContext());
+        setRetainInstance(true);
+        markerUpdated = false;
+        mineFields = MineFieldTable.getInstance().getMineFields();
         receiver = new LocationReceiver(this);
-        lbc.registerReceiver(receiver, new IntentFilter("UserLocationChange"));
+        LocalBroadcastManager.getInstance(this.getContext())
+                .registerReceiver(receiver, new IntentFilter(LOCATION_CHANGE_FILTER));
 
     }
 
@@ -83,23 +91,28 @@ public class MineMapFragment extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        LocalBroadcastManager.getInstance(this.getContext())
+                .unregisterReceiver(receiver);
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        markerUpdated = false;
         if (mapFragment != null) {
             mapFragment.getMapAsync(new OnMapReadyCallback() {
 
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     MineMapFragment.this.googleMap = googleMap;
-                    MineMapFragment.this.googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
                     displayMineFields();
-
                 }
             });
         }
+
+        LocalBroadcastManager.getInstance(this.getContext())
+                .registerReceiver(receiver, new IntentFilter("UserLocationChange"));
+
     }
 
     private void displayMineFields() {
@@ -113,7 +126,6 @@ public class MineMapFragment extends Fragment {
 
             googleMap.addCircle(circleOptions);
         }
-
     }
 
     private class LocationReceiver extends BroadcastReceiver {
@@ -127,8 +139,8 @@ public class MineMapFragment extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "MineMapFragment: New location received !");
-            Bundle bundle = intent.getExtras();
 
+            Bundle bundle = intent.getExtras();
             double latitude = bundle.getDouble("latitude");
             double longitude = bundle.getDouble("longitude");
 
@@ -137,22 +149,26 @@ public class MineMapFragment extends Fragment {
 
         private void createMarker(Double latitude, Double longitude) {
             LatLng latLng = new LatLng(latitude, longitude);
-
             userPositionMarker = googleMap.addMarker(new MarkerOptions().position(latLng));
             userPositionMarker.setIcon((BitmapDescriptorFactory.fromResource(R.mipmap.ic_location_3)));
             userPositionMarker.setTitle("My Location");
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+            googleMap.animateCamera(cameraUpdate);
+
         }
 
         private void updateMarker(Double latitude, Double longitude) {
             if (userPositionMarker == null) {
                 createMarker(latitude, longitude);
             }
-
             LatLng latLng = new LatLng(latitude, longitude);
             userPositionMarker.setPosition(latLng);
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            MineMapFragment.this.googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+
+            if (!markerUpdated) {
+                cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+                googleMap.animateCamera(cameraUpdate);
+                markerUpdated = true;
+            }
         }
     }
 }

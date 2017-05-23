@@ -104,8 +104,10 @@ public class LocationTrackerService extends Service
     public void onLocationChanged(Location location) {
         Log.i(TAG, "LocationTrackerService: Location changed to: " + location.toString());
 
-        updateGeofences(location);
-        notifyMapFragment(location);
+        if (googleApiClient.isConnected()) {
+            updateGeofences(location);
+            notifyMapFragment(location);
+        }
     }
 
     public void notifyMapFragment(Location location) {
