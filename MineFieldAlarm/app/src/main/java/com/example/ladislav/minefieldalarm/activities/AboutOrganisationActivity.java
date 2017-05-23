@@ -7,9 +7,8 @@ import com.example.ladislav.minefieldalarm.R;
 
 public class AboutOrganisationActivity extends AppCompatActivity {
 
-    //TODO think about FragmentActivity?
 
-    // TODO set MainActivity as parent activity
+    //TODO maybe read about from text file and add to text view programmatically
     // TODO add few words about UDAS
     // TODO add contact form, e-mail form maybe (with permission to use email and open an app)?
 

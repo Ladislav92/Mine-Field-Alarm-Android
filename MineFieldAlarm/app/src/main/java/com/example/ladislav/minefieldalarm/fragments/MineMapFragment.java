@@ -26,6 +26,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -107,7 +109,7 @@ public class MineMapFragment extends Fragment {
             CircleOptions circleOptions = new CircleOptions()
                     .center(new LatLng(mineField.getLatitude(), mineField.getLongitude()))
                     .radius(mineField.getRadius()).strokeColor(Color.RED)
-                    .strokeWidth(2).fillColor(0x500000ff);
+                    .strokeWidth(2).fillColor(Color.rgb(226, 203, 29));
 
             googleMap.addCircle(circleOptions);
         }
@@ -137,6 +139,8 @@ public class MineMapFragment extends Fragment {
             LatLng latLng = new LatLng(latitude, longitude);
 
             userPositionMarker = googleMap.addMarker(new MarkerOptions().position(latLng));
+            userPositionMarker.setIcon((BitmapDescriptorFactory.fromResource(R.mipmap.ic_location_3)));
+            userPositionMarker.setTitle("My Location");
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         }
 
