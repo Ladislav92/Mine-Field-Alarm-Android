@@ -7,8 +7,6 @@ import com.example.ladislav.minefieldalarm.R;
 
 public class AboutAppActivity extends AppCompatActivity {
 
-    //TODO think about FragmentActivity?
-
     // TODO set MainActivity as parent activity
     // TODO Add few words, some disclaimer (maybe disclaimer as dialog when app is opened
 

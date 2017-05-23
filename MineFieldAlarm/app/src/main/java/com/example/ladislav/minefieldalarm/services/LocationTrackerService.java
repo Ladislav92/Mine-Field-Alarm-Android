@@ -120,6 +120,7 @@ public class LocationTrackerService extends Service
 
         LocalBroadcastManager.getInstance(this).sendBroadcast(lbcIntent);
     }
+
     /**
      * Updates geofences that needs to be tracked based on
      * distance between user and mine fields.

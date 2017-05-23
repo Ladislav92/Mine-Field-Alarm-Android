@@ -7,18 +7,12 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
+
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,7 +24,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -39,12 +32,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
+// TODO write javadoc comments
+
 /**
  * Fragment that is used as part of MainActivity.
  * It receives location updates from LocationTrackerService
  * and sets the marker on GoogleMap along with geofences.
  */
-
 public class MineMapFragment extends Fragment {
 
     private static final String TAG = "MineFieldAlarm";
@@ -103,6 +97,7 @@ public class MineMapFragment extends Fragment {
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     MineMapFragment.this.googleMap = googleMap;
+                    cameraUpdate = CameraUpdateFactory.zoomTo(15);
                     displayMineFields();
                 }
             });

@@ -21,7 +21,7 @@ import java.util.List;
  * Helper class that listens for geofence transitions and triggers notification alarm.
  */
 
-public class GeofenceTransitionsIntentService extends IntentService{
+public class GeofenceTransitionsIntentService extends IntentService {
 
     public static final String TAG = "MineFieldAlarm";
     public static final String WORKER_THREAD_NAME = "GeofenceTransitionsWorker";
@@ -35,7 +35,9 @@ public class GeofenceTransitionsIntentService extends IntentService{
 
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
-            Log.e(TAG, "GeofenceTransitionService: There is error with geofence, error code: " + geofencingEvent.getErrorCode());
+            Log.e(TAG, "GeofenceTransitionService: " +
+                    "There is error with geofence, error code: "
+                    + geofencingEvent.getErrorCode());
             return;
         }
 
@@ -45,10 +47,9 @@ public class GeofenceTransitionsIntentService extends IntentService{
         //TODO write the location name(id) instead of entered/exited the location
         List<Geofence> triggered = geofencingEvent.getTriggeringGeofences();
 
-        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER){
+        if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             showNotification("Entered", "Entered the Location");
-        }
-        else if(geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+        } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
             showNotification("Exited", "Exited the Location");
         } else {
             showNotification("Error", "Error");
@@ -64,12 +65,10 @@ public class GeofenceTransitionsIntentService extends IntentService{
         NotificationManager notificationManager =
                 (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Create a PendingIntent for AllGeofencesActivity
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingNotificationIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // Create and send a notification
         // TODO set sound
         // TODO change icon
         Notification notification = new NotificationCompat.Builder(this)

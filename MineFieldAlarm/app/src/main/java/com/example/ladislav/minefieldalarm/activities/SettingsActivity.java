@@ -7,11 +7,8 @@ import com.example.ladislav.minefieldalarm.R;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    //TODO think about FragmentActivity?
-
-    // TODO set MainActivity as parent activity
-    // TODO add change language options
-    // TODO add start/stop service option
+    // TODO implement start/stop service option
+    // TODO implement change language options
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
