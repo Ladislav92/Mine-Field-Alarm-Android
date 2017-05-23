@@ -58,8 +58,6 @@ public class MineMapFragment extends Fragment {
     private CameraUpdate cameraUpdate;
 
     private boolean markerUpdated;
-    //TODO on pause and destroy maybe unregister receiver
-    // TODO when marker is updated once, do not move to it every time (it's annoying)
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
