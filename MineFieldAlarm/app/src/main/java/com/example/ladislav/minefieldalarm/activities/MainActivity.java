@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -41,18 +40,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String TAG = "MineFieldAlarm";
     private static final String LOCATION_CHANGE_FILTER = "UserLocationChange";
     private static final String USER_LOCATION_TEXT = "My location";
-    private GoogleMap googleMap;
 
+    private GoogleMap googleMap;
     private LocationReceiver receiver;
     private Marker userPositionMarker;
+
     private List<MineField> mineFields;
 
     private boolean cameraMoved;
-    private double lastLatitude;
-    private double lastLongitude;
     private boolean moveRequested;
-
-    //TODO add floating action button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,20 +56,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_main);
 
         setupMapIfNeeded();
+        setFloatingActionButton();
+
         cameraMoved = false;
         mineFields = MineFieldTable.getInstance().getMineFields();
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_my_location_black_24dp);
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),
-                        "Requesting the position", Toast.LENGTH_LONG).show();
-                moveRequested = true;
-            }
-        });
         receiver = new LocationReceiver();
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(receiver, new IntentFilter(LOCATION_CHANGE_FILTER));
@@ -85,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             startService(new Intent(this, LocationTrackerService.class));
         }
     }
+
 
     @Override
     protected void onPause() {
@@ -108,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        displayMineFields();
 
         MapStateManager mgr = new MapStateManager(this);
         CameraPosition position = mgr.getSavedCameraPosition();
@@ -117,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             googleMap.moveCamera(update);
             googleMap.setMapType(mgr.getSavedMapType());
         }
+        displayMineFields();
     }
 
     private void setupMapIfNeeded() {
@@ -135,9 +122,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .center(new LatLng(mineField.getLatitude(), mineField.getLongitude()))
                     .radius(mineField.getRadius()).strokeColor(Color.RED)
                     .strokeWidth(2).fillColor(Color.rgb(226, 203, 29));
-
             googleMap.addCircle(circleOptions);
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
     }
 
     @Override
@@ -161,26 +153,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void startAnotherActivity(Class<?> activity) {
-        Intent intent = new Intent(this, activity);
-        startActivity(intent);
-    }
 
     private void createMarker(LatLng latLng, String title) {
         userPositionMarker = googleMap.addMarker(new MarkerOptions().position(latLng));
@@ -210,11 +182,39 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.i(TAG, "MineMapFragment: New location received !");
 
             Bundle bundle = intent.getExtras();
-            lastLatitude = bundle.getDouble("latitude");
-            lastLongitude = bundle.getDouble("longitude");
+            double lastLatitude = bundle.getDouble("latitude");
+            double lastLongitude = bundle.getDouble("longitude");
             LatLng latLng = new LatLng(lastLatitude, lastLongitude);
             updateMarker(latLng);
         }
     }
 
+    private void setFloatingActionButton() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_my_location_black_24dp);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(),
+                        "Requesting the position", Toast.LENGTH_LONG).show();
+                moveRequested = true;
+            }
+        });
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void startAnotherActivity(Class<?> activity) {
+        Intent intent = new Intent(this, activity);
+        startActivity(intent);
+    }
 }

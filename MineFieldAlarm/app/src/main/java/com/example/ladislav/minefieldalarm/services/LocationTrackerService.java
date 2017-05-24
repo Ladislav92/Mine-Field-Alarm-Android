@@ -46,7 +46,6 @@ public class LocationTrackerService extends Service
     public static final int UPDATE_INTERVAL = 10000;
     public static final int FASTEST_UPDATE_INTERVAL = 1000;
 
-    private MineFieldTable mineFields;
     private List<MineField> closestFields;
 
     private GoogleApiClient googleApiClient;
@@ -67,7 +66,6 @@ public class LocationTrackerService extends Service
     @Override
     public void onCreate() {
         Log.i(TAG, "LocationTrackerService onCreate");
-        mineFields = MineFieldTable.getInstance();
     }
 
     @Override
@@ -146,7 +144,6 @@ public class LocationTrackerService extends Service
         closestFields = MineFieldTable.getInstance().getClosestFieldsTo(userLatitude, userLongitude);
 
         pendingIntent = requestPendingIntent();
-
         GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
 
         for (MineField mineField : closestFields) {
@@ -175,7 +172,7 @@ public class LocationTrackerService extends Service
 
     private PendingIntent requestPendingIntent() {
         Log.i(TAG, "LocationTrackerService: requesting pending intent.");
-        if (null != pendingIntent) {
+        if (pendingIntent != null) {
             return pendingIntent;
         }
 
@@ -209,7 +206,6 @@ public class LocationTrackerService extends Service
      */
     private void createLocationRequest() {
         Log.i(TAG, "LocationTrackerService: Creating location request.");
-
         locationRequest = new LocationRequest();
         locationRequest.setInterval(UPDATE_INTERVAL);
         locationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL);

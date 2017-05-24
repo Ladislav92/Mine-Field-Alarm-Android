@@ -15,7 +15,6 @@ import com.example.ladislav.minefieldalarm.activities.MainActivity;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
-import java.util.List;
 
 /**
  * Helper class that listens for geofence transitions and triggers notification alarm.
@@ -34,6 +33,12 @@ public class GeofenceTransitionsIntentService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
 
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+
+        if (geofencingEvent == null) {
+            Log.e(TAG, "Geofencing event is null");
+            return;
+        }
+
         if (geofencingEvent.hasError()) {
             Log.e(TAG, "GeofenceTransitionService: " +
                     "There is error with geofence, error code: "
@@ -44,13 +49,10 @@ public class GeofenceTransitionsIntentService extends IntentService {
         Log.i(TAG, "GeofenceTransitionIntentService: getting geofence transition. ");
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
-        //TODO write the location name(id) instead of entered/exited the location
-        List<Geofence> triggered = geofencingEvent.getTriggeringGeofences();
-
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             showNotification("DANGER!", "Mine field is near your location.");
         } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-            showNotification("Exited", "Exited the danger zone");
+            showNotification("Exited", "You left the danger zone");
         } else {
             showNotification("Error", "Error");
         }
