@@ -6,14 +6,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
+import com.example.ladislav.minefieldalarm.model.MapStateManager;
 import com.example.ladislav.minefieldalarm.model.MineField;
 import com.example.ladislav.minefieldalarm.model.MineFieldTable;
 import com.example.ladislav.minefieldalarm.services.LocationTrackerService;
@@ -24,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -33,62 +38,59 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private static final String LOCATION_CHANGE_FILTER = "UserLocationChange";
     public static final String TAG = "MineFieldAlarm";
+    private static final String LOCATION_CHANGE_FILTER = "UserLocationChange";
+    private static final String USER_LOCATION_TEXT = "My location";
     private GoogleMap googleMap;
 
     private LocationReceiver receiver;
     private Marker userPositionMarker;
-    private CameraUpdate cameraUpdate;
     private List<MineField> mineFields;
 
+    private boolean cameraMoved;
     private double lastLatitude;
     private double lastLongitude;
-    private boolean markerUpdated;
+    private boolean moveRequested;
 
-    //TODO manage life cycle of this activity better
     //TODO add floating action button
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.i(TAG, "MainActivity onCreate started");
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_map);
+        setContentView(R.layout.activity_main);
 
-        if (savedInstanceState != null) {
-            lastLatitude = savedInstanceState.getDouble("latitude");
-            lastLongitude = savedInstanceState.getDouble("longitude");
-
-        }
         setupMapIfNeeded();
-        markerUpdated = false;
+        cameraMoved = false;
         mineFields = MineFieldTable.getInstance().getMineFields();
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_my_location_black_24dp);
 
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(),
+                        "Requesting the position", Toast.LENGTH_LONG).show();
+                moveRequested = true;
+            }
+        });
         receiver = new LocationReceiver();
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(receiver, new IntentFilter(LOCATION_CHANGE_FILTER));
 
-
         // TODO start service to run in the foreground
         // TODO Make static instance of LocationTrackerService for access from SettingsActivity?
-        Log.i(TAG, "MainActivity: starting LocationTrackerService");
         if (!isMyServiceRunning(LocationTrackerService.class)) {
+            Log.i(TAG, "MainActivity: starting LocationTrackerService");
             startService(new Intent(this, LocationTrackerService.class));
         }
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putDouble("latitude", lastLatitude);
-        outState.putDouble("longitude", lastLongitude);
-    }
-
-    @Override
     protected void onPause() {
         super.onPause();
-
+        MapStateManager mgr = new MapStateManager(this);
+        mgr.saveMapState(googleMap);
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(receiver);
     }
@@ -96,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onResume() {
         super.onResume();
+        cameraMoved = false;
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(receiver, new IntentFilter(LOCATION_CHANGE_FILTER));
         setupMapIfNeeded();
@@ -106,7 +109,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         displayMineFields();
-        // TODO change it to last known!
+
+        MapStateManager mgr = new MapStateManager(this);
+        CameraPosition position = mgr.getSavedCameraPosition();
+        if (position != null) {
+            CameraUpdate update = CameraUpdateFactory.newCameraPosition(position);
+            googleMap.moveCamera(update);
+            googleMap.setMapType(mgr.getSavedMapType());
+        }
     }
 
     private void setupMapIfNeeded() {
@@ -135,15 +145,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         switch (item.getItemId()) {
             case R.id.action_about_app:
-                startActivity(AboutAppActivity.class);
+                startAnotherActivity(AboutAppActivity.class);
                 return true;
 
             case R.id.action_about_org:
-                startActivity(AboutOrganisationActivity.class);
+                startAnotherActivity(AboutOrganisationActivity.class);
                 return true;
 
             case R.id.action_settings:
-                startActivity(SettingsActivity.class);
+                startAnotherActivity(SettingsActivity.class);
                 return true;
 
             default:
@@ -167,17 +177,33 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         return false;
     }
 
-    public void startActivity(Class<?> activity) {
+    public void startAnotherActivity(Class<?> activity) {
         Intent intent = new Intent(this, activity);
         startActivity(intent);
     }
 
-    private class LocationReceiver extends BroadcastReceiver {
+    private void createMarker(LatLng latLng, String title) {
+        userPositionMarker = googleMap.addMarker(new MarkerOptions().position(latLng));
+        userPositionMarker.setIcon((BitmapDescriptorFactory.fromResource(R.mipmap.ic_location_3)));
+        userPositionMarker.setTitle(title);
+    }
 
+    private void updateMarker(LatLng latLng) {
 
-        public LocationReceiver() {
-
+        if (userPositionMarker == null) {
+            createMarker(latLng, USER_LOCATION_TEXT);
         }
+        userPositionMarker.setPosition(latLng);
+
+        if (!cameraMoved || moveRequested) {
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
+            googleMap.animateCamera(cameraUpdate);
+            cameraMoved = true;
+            moveRequested = false;
+        }
+    }
+
+    private class LocationReceiver extends BroadcastReceiver {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -186,32 +212,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Bundle bundle = intent.getExtras();
             lastLatitude = bundle.getDouble("latitude");
             lastLongitude = bundle.getDouble("longitude");
-
-            updateMarker(lastLatitude, lastLongitude);
-        }
-
-        private void createMarker(Double latitude, Double longitude) {
-            LatLng latLng = new LatLng(latitude, longitude);
-            userPositionMarker = googleMap.addMarker(new MarkerOptions().position(latLng));
-            userPositionMarker.setIcon((BitmapDescriptorFactory.fromResource(R.mipmap.ic_location_3)));
-            userPositionMarker.setTitle("My Location");
-            cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-            googleMap.animateCamera(cameraUpdate);
-
-        }
-
-        private void updateMarker(Double latitude, Double longitude) {
-            if (userPositionMarker == null) {
-                createMarker(latitude, longitude);
-            }
-            LatLng latLng = new LatLng(latitude, longitude);
-            userPositionMarker.setPosition(latLng);
-
-            if (!markerUpdated) {
-                cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 15);
-                googleMap.animateCamera(cameraUpdate);
-                markerUpdated = true;
-            }
+            LatLng latLng = new LatLng(lastLatitude, lastLongitude);
+            updateMarker(latLng);
         }
     }
 
