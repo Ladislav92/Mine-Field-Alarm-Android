@@ -48,9 +48,9 @@ public class GeofenceTransitionsIntentService extends IntentService {
         List<Geofence> triggered = geofencingEvent.getTriggeringGeofences();
 
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
-            showNotification("Entered", "Entered the Location");
+            showNotification("DANGER!", "Mine field is near your location.");
         } else if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
-            showNotification("Exited", "Exited the Location");
+            showNotification("Exited", "Exited the danger zone");
         } else {
             showNotification("Error", "Error");
         }

@@ -6,4 +6,7 @@
     <string name="tracking_service_switch">Tracking Service</string>
     <string name="about_app_text">This application serves to prevent its user entering a minefield You should use this app with extreme caution due to imperfection of tracking services. The application triggers alarm when user is approximately 500 meters far away from the minefield.</string>
     <string name="title_activity_main2">Main2Activity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
