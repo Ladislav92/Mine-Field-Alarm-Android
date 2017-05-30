@@ -85,3 +85,4 @@ public class GeofenceTransitionsIntentService extends IntentService {
         notificationManager.notify(0, notification);
     }
 }
+

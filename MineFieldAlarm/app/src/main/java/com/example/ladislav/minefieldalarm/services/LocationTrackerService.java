@@ -33,7 +33,7 @@ import java.util.List;
  * On geofence enter, it turns on alarm and re-starts main activity showing location and minefield !
  */
 
-// TODO Manage life cycle of service: make option to restart itself if killed !
+// Manage life cycle of service: make option to restart itself if killed !
 
 public class LocationTrackerService extends Service
         implements GoogleApiClient.ConnectionCallbacks,
@@ -43,14 +43,14 @@ public class LocationTrackerService extends Service
 
     private static String TAG = "MineFieldAlarm";
 
+    private static boolean isRunning;
     public static final int UPDATE_INTERVAL = 10000;
     public static final int FASTEST_UPDATE_INTERVAL = 1000;
-
     private List<MineField> closestFields;
-
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private PendingIntent pendingIntent;
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -59,8 +59,15 @@ public class LocationTrackerService extends Service
         buildGoogleApiClient();
         createLocationRequest();
         googleApiClient.connect();
+        isRunning = true;
 
         return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isRunning = false;
     }
 
     @Override
@@ -72,14 +79,11 @@ public class LocationTrackerService extends Service
     public void onConnected(@Nullable Bundle bundle) {
         Log.i(TAG, "Connected to GoogleApiClient, starting location updates... ");
 
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling !  !  !
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // start dialog and ask for permission
             return;
         }
         LocationServices.FusedLocationApi.requestLocationUpdates(
@@ -97,6 +101,7 @@ public class LocationTrackerService extends Service
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i(TAG, "Connection failed: " + connectionResult.getErrorCode());
     }
+
 
     @Override
     public void onLocationChanged(Location location) {
@@ -129,6 +134,7 @@ public class LocationTrackerService extends Service
      *
      * @param location used to get users latitude and longitude
      */
+
     private void updateGeofences(Location location) {
         Log.d(TAG, "LocationTrackerService: Updating geofences");
 
@@ -156,13 +162,7 @@ public class LocationTrackerService extends Service
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             Log.i(TAG, "LocationTrackerService: location permission NOT granted ");
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+            // start dialog and ask for permission
             return;
         }
         Log.i(TAG, "LocationTrackerService: adding geofences. ");
@@ -182,7 +182,6 @@ public class LocationTrackerService extends Service
 
     }
 
-    // TODO implement me ! ! !
     @Override   //result callback
     public void onResult(@NonNull Status status) {
 
@@ -192,6 +191,7 @@ public class LocationTrackerService extends Service
      * Helper method that uses GoogleApiClient Builder to instantiate
      * the client.
      */
+
     private synchronized void buildGoogleApiClient() {
         Log.i(TAG, "Building GoogleApiClient");
         googleApiClient = new GoogleApiClient.Builder(this)
@@ -204,6 +204,7 @@ public class LocationTrackerService extends Service
      * Helper method that instantiates LocationRequest
      * and sets update interval and location accuracy.
      */
+
     private void createLocationRequest() {
         Log.i(TAG, "LocationTrackerService: Creating location request.");
         locationRequest = new LocationRequest();
@@ -212,8 +213,13 @@ public class LocationTrackerService extends Service
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    public static boolean isRunning() {
+        return isRunning;
+    }
+
+
     @Nullable
-    @Override    // service
+    @Override
     public IBinder onBind(Intent intent) {
         return null;
     }

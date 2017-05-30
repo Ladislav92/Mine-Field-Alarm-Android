@@ -55,7 +55,6 @@ public class MineField {
         return radius;
     }
 
-
     /**
      * Calculates distance between 2 locations (user and minefield in my case)
      * Uses Haversine formula for calculation:
@@ -67,7 +66,6 @@ public class MineField {
      *
      * @return double distance in kilometers
      */
-
     public double distanceFrom(double lat, double lon) {
 
         double minefieldLat = latitude;
@@ -85,3 +83,10 @@ public class MineField {
         return R * c;
     }
 }
+
+
+
+
+
+
+

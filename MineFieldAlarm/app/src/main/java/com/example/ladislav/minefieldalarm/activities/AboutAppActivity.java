@@ -7,9 +7,6 @@ import com.example.ladislav.minefieldalarm.R;
 
 public class AboutAppActivity extends AppCompatActivity {
 
-    // TODO set MainActivity as parent activity
-    // TODO Add few words, some disclaimer (maybe disclaimer as dialog when app is opened
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -8,7 +8,7 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
- * Created by Ladislav on 5/24/2017.
+ * Class used to save the save the state of the map if activity was resumed.
  */
 
 public class MapStateManager {
@@ -61,3 +61,5 @@ public class MapStateManager {
         return mapStatePrefs.getInt(MAP_TYPE, GoogleMap.MAP_TYPE_NORMAL);
     }
 }
+
+

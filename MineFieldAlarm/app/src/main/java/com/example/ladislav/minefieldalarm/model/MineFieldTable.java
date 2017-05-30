@@ -9,7 +9,7 @@ import java.util.List;
  * Serves as storage to all known minefields and their exact location.
  */
 
-// TODO read data from file that holds location data of mine fields
+// TODO read data from file/db that holds location data of mine fields
 
 public class MineFieldTable {
 
@@ -17,9 +17,14 @@ public class MineFieldTable {
 
     private List<MineField> mineFields;
 
+    private void initialiseMineFields(){
+        //init from db or file
+    }
+
     private static MineFieldTable instance = new MineFieldTable();
 
     private MineFieldTable() {
+        initialiseMineFields();
         mineFields = new ArrayList<>();
 
         mineFields.add(new MineField("Obshaga", 60.008557, 30.391760, 100));

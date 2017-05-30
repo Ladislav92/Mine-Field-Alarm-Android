@@ -9,4 +9,10 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="udas_descr">The Organization of Amputees Republike Srpske (UDAS) (Serbian: Организација Aмпутираца УДАС Републике Српске) is registered as a nonprofit organization and non-governmental organization based in Banja Luka, Bosnia and Herzegovina, founded by amputees which are mostly landmine victims in order to provide support for victims of landmines, unexploded ordnance (UXO), cluster munition and other persons with disabilities and their families to integrate them back into the community, thus enabling them to live normal lives.</string>
+    <string name="organisation_name">UDAS organisation</string>
+    <string name="udas_hyperlink">http://www.udas.rs.ba</string>
+    <string name="send_us_email_btn">Send us email</string>
+    <string name="subject_hint">Subject</string>
+    <string name="contact_us">Contact us:</string>
 </resources>
