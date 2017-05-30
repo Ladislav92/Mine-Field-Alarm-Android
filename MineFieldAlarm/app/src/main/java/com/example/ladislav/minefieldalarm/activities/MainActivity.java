@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap googleMap;
     private LocationReceiver receiver;
     private Marker userPositionMarker;
+    LatLng lastLatLng;
 
     private List<MineField> mineFields;
 
@@ -64,9 +65,10 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(receiver, new IntentFilter(LOCATION_CHANGE_FILTER));
 
+
         // TODO start service to run in the foreground
         // TODO Make static instance of LocationTrackerService for access from SettingsActivity?
-        if (!isMyServiceRunning(LocationTrackerService.class)) {
+        if (!LocationTrackerService.isRunning()) {
             Log.i(TAG, "MainActivity: starting LocationTrackerService");
             startService(new Intent(this, LocationTrackerService.class));
         }
@@ -184,8 +186,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             Bundle bundle = intent.getExtras();
             double lastLatitude = bundle.getDouble("latitude");
             double lastLongitude = bundle.getDouble("longitude");
-            LatLng latLng = new LatLng(lastLatitude, lastLongitude);
-            updateMarker(latLng);
+            lastLatLng = new LatLng(lastLatitude, lastLongitude);
+            updateMarker(lastLatLng);
         }
     }
 
@@ -198,20 +200,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void onClick(View view) {
                 Toast.makeText(getApplicationContext(),
                         "Requesting the position", Toast.LENGTH_LONG).show();
+                if (lastLatLng != null) {
+                    updateMarker(lastLatLng);
+                }
                 moveRequested = true;
             }
         });
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     public void startAnotherActivity(Class<?> activity) {
         Intent intent = new Intent(this, activity);
