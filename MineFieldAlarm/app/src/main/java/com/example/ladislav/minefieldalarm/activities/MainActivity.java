@@ -1,16 +1,13 @@
 package com.example.ladislav.minefieldalarm.activities;
 
-import android.Manifest;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -43,18 +40,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     public static final String TAG = "MineFieldAlarm";
     private static final String LOCATION_CHANGE_FILTER = "UserLocationChange";
     private static final String USER_LOCATION_TEXT = "My location";
+
     private GoogleMap googleMap;
     private LocationReceiver receiver;
     private Marker userPositionMarker;
+
     private List<MineField> mineFields;
+
     private boolean cameraMoved;
     private boolean moveRequested;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkLocationPermission();
         setupMapIfNeeded();
         setFloatingActionButton();
 
@@ -64,13 +64,15 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(receiver, new IntentFilter(LOCATION_CHANGE_FILTER));
 
-        // start service to run in the foreground
-        // Make static instance of LocationTrackerService for access from SettingsActivity?
+        // TODO start service to run in the foreground
+        // TODO Make static instance of LocationTrackerService for access from SettingsActivity?
         if (!isMyServiceRunning(LocationTrackerService.class)) {
             Log.i(TAG, "MainActivity: starting LocationTrackerService");
             startService(new Intent(this, LocationTrackerService.class));
         }
     }
+
+
     @Override
     protected void onPause() {
         super.onPause();
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocalBroadcastManager.getInstance(this)
                 .unregisterReceiver(receiver);
     }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -88,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         setupMapIfNeeded();
 
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
@@ -101,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         displayMineFields();
     }
+
     private void setupMapIfNeeded() {
         if (googleMap == null) {
             SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -108,11 +113,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             mapFragment.getMapAsync(this);
         }
     }
-    private void checkLocationPermission() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
-        }
-    }
+
     private void displayMineFields() {
 
         for (MineField mineField : mineFields) {
@@ -124,14 +125,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             googleMap.addCircle(circleOptions);
         }
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
+
     @Override
-
-
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
@@ -151,11 +152,14 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 return super.onOptionsItemSelected(item);
         }
     }
+
+
     private void createMarker(LatLng latLng, String title) {
         userPositionMarker = googleMap.addMarker(new MarkerOptions().position(latLng));
         userPositionMarker.setIcon((BitmapDescriptorFactory.fromResource(R.mipmap.ic_location_3)));
         userPositionMarker.setTitle(title);
     }
+
     private void updateMarker(LatLng latLng) {
 
         if (userPositionMarker == null) {
@@ -170,6 +174,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             moveRequested = false;
         }
     }
+
     private class LocationReceiver extends BroadcastReceiver {
 
         @Override
@@ -183,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             updateMarker(latLng);
         }
     }
+
     private void setFloatingActionButton() {
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_my_location_black_24dp);
@@ -196,6 +202,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         });
     }
+
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -205,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
         return false;
     }
+
     public void startAnotherActivity(Class<?> activity) {
         Intent intent = new Intent(this, activity);
         startActivity(intent);

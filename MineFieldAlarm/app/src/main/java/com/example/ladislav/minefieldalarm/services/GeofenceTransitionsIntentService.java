@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -77,6 +78,8 @@ public class GeofenceTransitionsIntentService extends IntentService {
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(text)
                 .setContentText(text)
+                .setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 }) // TODO constant
+                .setSound(Uri.parse("../../res/raw/danger_alarm.mp3"))
                 .setContentIntent(pendingNotificationIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(bigText))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

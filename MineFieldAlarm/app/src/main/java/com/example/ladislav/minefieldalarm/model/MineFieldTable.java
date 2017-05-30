@@ -18,18 +18,16 @@ public class MineFieldTable {
     private List<MineField> mineFields;
 
     private void initialiseMineFields(){
-        //init from db or file
+        mineFields = new ArrayList<>();
+        mineFields.add(new MineField("Obshaga", 60.008557, 30.391760, 100));
+        mineFields.add(new MineField("Glavnoe", 59.999755, 30.364346, 100));
+        mineFields.add(new MineField("9k", 60.006726, 30.372550, 100));
     }
 
     private static MineFieldTable instance = new MineFieldTable();
 
     private MineFieldTable() {
         initialiseMineFields();
-        mineFields = new ArrayList<>();
-
-        mineFields.add(new MineField("Obshaga", 60.008557, 30.391760, 100));
-        mineFields.add(new MineField("Glavno", 59.999755, 30.364346, 100));
-        mineFields.add(new MineField("9k", 60.006726, 30.372550, 100));
     }
 
     public List<MineField> getMineFields() {

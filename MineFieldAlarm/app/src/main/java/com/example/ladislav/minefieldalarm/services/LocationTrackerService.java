@@ -33,8 +33,6 @@ import java.util.List;
  * On geofence enter, it turns on alarm and re-starts main activity showing location and minefield !
  */
 
-// Manage life cycle of service: make option to restart itself if killed !
-
 public class LocationTrackerService extends Service
         implements GoogleApiClient.ConnectionCallbacks,
         LocationListener,
@@ -44,7 +42,7 @@ public class LocationTrackerService extends Service
     private static String TAG = "MineFieldAlarm";
 
     private static boolean isRunning;
-    public static final int UPDATE_INTERVAL = 10000;
+    public static final int UPDATE_INTERVAL = 60000;
     public static final int FASTEST_UPDATE_INTERVAL = 1000;
     private List<MineField> closestFields;
     private GoogleApiClient googleApiClient;
