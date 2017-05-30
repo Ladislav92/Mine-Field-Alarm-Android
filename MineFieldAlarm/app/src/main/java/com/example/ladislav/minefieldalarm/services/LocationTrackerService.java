@@ -20,12 +20,15 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Background user location tracker. Uses Google API client to track and update user location,
@@ -44,7 +47,7 @@ public class LocationTrackerService extends Service
     private static boolean isRunning;
     public static final int UPDATE_INTERVAL = 60000;
     public static final int FASTEST_UPDATE_INTERVAL = 1000;
-    private List<MineField> closestFields;
+    private Set<Geofence> closestFields;
     private GoogleApiClient googleApiClient;
     private LocationRequest locationRequest;
     private PendingIntent pendingIntent;
@@ -136,26 +139,43 @@ public class LocationTrackerService extends Service
     private void updateGeofences(Location location) {
         Log.d(TAG, "LocationTrackerService: Updating geofences");
 
+        // note: reimplemented update geofences - needs testing and refactor probably :)
         double userLatitude = location.getLatitude();
         double userLongitude = location.getLongitude();
 
-        if (closestFields != null && !closestFields.isEmpty()) {
+        List<Geofence> newGeofences = new ArrayList<>();
+        GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
+        pendingIntent = requestPendingIntent();
+
+        if (closestFields == null || closestFields.isEmpty()) {
+            closestFields = MineFieldTable.getInstance().getClosestFieldsTo(userLatitude, userLongitude);
+            for (Geofence mineField : closestFields) {
+                geofencingRequestBuilder.addGeofence(mineField);
+            }
+
+        } else {
+            Set<Geofence> tempClosest = MineFieldTable.getInstance().getClosestFieldsTo(userLatitude, userLongitude);
+            for (Geofence g : tempClosest) {
+                if (!closestFields.contains(g)) {
+                    newGeofences.add(g);
+                    closestFields.add(g);
+                }
+            }
+            for (Geofence mineField : newGeofences) {
+                geofencingRequestBuilder.addGeofence(mineField);
+            }
+
+        }
+
+        Log.i(TAG, "LocationTrackerService: building Geofencing request ");
+        GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
+
+        if (closestFields != null && closestFields.size() > 99) {
             Log.i(TAG, "LocationTrackerService: removing geofences.");
             LocationServices.GeofencingApi.removeGeofences(googleApiClient,
                     requestPendingIntent()).setResultCallback(this);
         }
 
-        closestFields = MineFieldTable.getInstance().getClosestFieldsTo(userLatitude, userLongitude);
-
-        pendingIntent = requestPendingIntent();
-        GeofencingRequest.Builder geofencingRequestBuilder = new GeofencingRequest.Builder();
-
-        for (MineField mineField : closestFields) {
-            geofencingRequestBuilder.addGeofence(mineField.toGeofence());
-        }
-
-        Log.i(TAG, "LocationTrackerService: building Geofencing request ");
-        GeofencingRequest geofencingRequest = geofencingRequestBuilder.build();
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -182,7 +202,7 @@ public class LocationTrackerService extends Service
 
     @Override   //result callback
     public void onResult(@NonNull Status status) {
-
+        Log.i(TAG, "GeofencingStatus:" + status.getStatusMessage());
     }
 
     /**

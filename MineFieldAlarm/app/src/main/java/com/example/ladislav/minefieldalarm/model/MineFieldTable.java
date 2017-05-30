@@ -1,8 +1,12 @@
 package com.example.ladislav.minefieldalarm.model;
 
+import com.google.android.gms.location.Geofence;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Singleton class.
@@ -38,21 +42,17 @@ public class MineFieldTable {
         return instance;
     }
 
-    public List<MineField> getClosestFieldsTo(double latitude, double longitude) {
+    public Set<Geofence> getClosestFieldsTo(double latitude, double longitude) {
 
-        List<MineField> closestFields = new ArrayList<>();
+        Set<Geofence> closestFields = new HashSet<>();
 
         for (MineField mineField : mineFields) {
             if (mineField.distanceFrom(latitude, longitude) <= CHECK_PERIMETER) {
-                closestFields.add(mineField);
+                closestFields.add(mineField.toGeofence());
             }
         }
 
-        if (closestFields.size() > 99) {
-            //TODO sort all by distance and remove the furthest
-        }
-
-        return Collections.unmodifiableList(closestFields);
+        return closestFields;
     }
 
 }
