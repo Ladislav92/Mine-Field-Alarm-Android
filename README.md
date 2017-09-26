@@ -1,6 +1,6 @@
 # Mine-Field-Alarm-Android
 
-This project started as an idea of Organisation of Amputees UDAS of Republic of Srpska. 
+This project started as an idea of "Organisation of Amputees UDAS Republike Srpske". (https://en.wikipedia.org/wiki/The_Organization_of_Amputees_UDAS_Republike_Srpske) 
 
 Since Bosnia and Herzegovina has a problem with mine pollution, UDAS decided to develop an application that will trigger an alarm on the
 android device when carrier comes near the minefield.
