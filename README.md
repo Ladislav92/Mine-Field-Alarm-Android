@@ -15,3 +15,5 @@ develompent to participate and contribute in one good and human idea - to possib
 Also, I found some bugs in my code, and I even forgot what they are - so it would be good to report them asap.
 Some optimisations and refactoring could be made. Documentation also needs improvement.
 
+At this stage app has connection with google geolocation API and google maps API. It also can draw radius on map that will represent a minefield. It already triggers an alarm but it is buggy.
+
