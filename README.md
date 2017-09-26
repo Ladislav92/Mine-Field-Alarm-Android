@@ -7,8 +7,8 @@ android device when carrier comes near the minefield.
 
 As an volounteer in organisation UDAS, I began implementing this application as an University project.
 
-As I don't have much time to develop whole application myself, and since that this application can be useful 
+Because I don't have much time to develop whole application myself, and since that this application can be useful 
 in any other country or area that has the same problem as Bosnia I decided to make this project an open source so I 
 am calling any java / android programmer, UI designer or anyone with any good idea for improvement and application 
-develompent to participate and contribute in one good and human idea - to possibly save life.
+develompent to participate and contribute in one good and human idea - to possibly save a life.
 
