@@ -12,3 +12,6 @@ in any other country or area that has the same problem as Bosnia I decided to ma
 am calling any java / android programmer, UI designer or anyone with any good idea for improvement and application 
 develompent to participate and contribute in one good and human idea - to possibly save a life.
 
+Also, I found some bugs in my code, and I even forgot what they are - so it would be good to report them asap.
+Some optimisations and refactoring could be made. Documentation also needs improvement.
+
