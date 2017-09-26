@@ -5,6 +5,10 @@ This project started as an idea of "Organisation of Amputees UDAS Republike Srps
 Since Bosnia and Herzegovina has a problem with mine pollution, UDAS decided to develop an application that will trigger an alarm on the
 android device when carrier comes near the minefield.
 
+There are still around 12 000 minefields in Bosnia and Herzegovina. There are more than 1500 post-war victims of landmines in Bosnia.
+
+The database with coordinates of existing minefields currently exist handwritten on papers.
+
 As an volounteer in organisation UDAS, I began implementing this application as an University project.
 
 Because I don't have much time to develop whole application myself, and since that this application can be useful 
