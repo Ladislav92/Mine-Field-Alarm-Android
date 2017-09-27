@@ -34,7 +34,7 @@ some issue you find interesting. When you finish create [pull request](https://h
 
 ### Write javadocs for your methods.
 When writing a comments, try to avoid inline comments, because they (usually) make pollution in the code.
-External comments in form of javadoc commments are better idea. Try to document your code well.
+External comments in form of javadoc commments are better idea. Try to document your code well. If you used stackoverflow solution provide link for it !
 [Article about writing specifications](https://ocw.mit.edu/ans7870/6/6.005/s16/classes/06-specifications/specs/)
 
 ### It would be nice to write unit tests too.
