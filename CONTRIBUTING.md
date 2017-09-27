@@ -3,7 +3,7 @@
 Minefield alarm is pretty new project. As I am new to open source and working on project with more people ANY help
 or suggestion would be nice. As the time passes I will try to upgrade this file and make it more and more detail.
 
-# What hould I knoe before I get started?
+# What should I know before I get started?
 
 Our [discord](https://discord.gg/b4EDUDs) discord server.
 
