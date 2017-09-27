@@ -41,6 +41,8 @@ External comments in form of javadoc commments are better idea. Try to document 
 [Article about unit testing here](https://ocw.mit.edu/ans7870/6/6.005/s16/classes/03-testing/)
 
 
+## If yu are going to work on some issue, be sure to write comment on it so other people know ! ! !
+
 
 
 
