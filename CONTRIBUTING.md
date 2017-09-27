@@ -10,7 +10,7 @@ Our [discord](https://discord.gg/b4EDUDs) server.
 Right now, project has only few classes and it is small. There are some bugs, some things to be upgraded and many to be changed.
 You could check what is developed already and what could you develop in [issues](https://github.com/Ladislav92/Mine-Field-Alarm-Android/issues) and [readme](https://github.com/Ladislav92/Mine-Field-Alarm-Android/blob/master/README.md) file.
 
-#How can I help ?
+# How can I help ?
 
 ## Help organising this repository !
 Many of (for now) few people that are willing to work on this project don't have much experience in group projects or open source.
