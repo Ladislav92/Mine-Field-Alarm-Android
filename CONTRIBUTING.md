@@ -5,10 +5,10 @@ or suggestion would be nice. As the time passes I will try to upgrade this file 
 
 # What should I know before I get started?
 
-Our [discord](https://discord.gg/b4EDUDs) discord server.
+Our [discord](https://discord.gg/b4EDUDs) server.
 
 Right now, project has only few classes and it is small. There are some bugs, some things to be upgraded and many to be changed.
-You could check what is developed already and what could you develop in issues and readme file.
+You could check what is developed already and what could you develop in [issues](https://github.com/Ladislav92/Mine-Field-Alarm-Android/issues) and [readme](https://github.com/Ladislav92/Mine-Field-Alarm-Android/blob/master/README.md) file.
 
 #How can I help ?
 
