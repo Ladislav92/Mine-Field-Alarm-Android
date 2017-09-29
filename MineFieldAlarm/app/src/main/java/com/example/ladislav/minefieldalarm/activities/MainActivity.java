@@ -1,6 +1,5 @@
 package com.example.ladislav.minefieldalarm.activities;
 
-import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -15,36 +14,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-
+import com.example.ladislav.minefieldalarm.R;
 import com.example.ladislav.minefieldalarm.model.MapStateManager;
 import com.example.ladislav.minefieldalarm.model.MineField;
 import com.example.ladislav.minefieldalarm.model.MineFieldTable;
 import com.example.ladislav.minefieldalarm.services.LocationTrackerService;
-import com.example.ladislav.minefieldalarm.R;
-import com.google.android.gms.maps.CameraUpdate;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.CircleOptions;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.*;
+import com.google.android.gms.maps.model.*;
 
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    public static final String TAG = "MineFieldAlarm";
+    private static final String TAG = "MineFieldAlarm";
     private static final String LOCATION_CHANGE_FILTER = "UserLocationChange";
     private static final String USER_LOCATION_TEXT = "My location";
 
     private GoogleMap googleMap;
     private LocationReceiver receiver;
     private Marker userPositionMarker;
-    LatLng lastLatLng;
+    private LatLng lastLatLng;
 
     private List<MineField> mineFields;
 
@@ -64,7 +53,6 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         receiver = new LocationReceiver();
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(receiver, new IntentFilter(LOCATION_CHANGE_FILTER));
-
 
         // TODO start service to run in the foreground
         // TODO Make static instance of LocationTrackerService for access from SettingsActivity?
@@ -158,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void createMarker(LatLng latLng, String title) {
         userPositionMarker = googleMap.addMarker(new MarkerOptions().position(latLng));
-        userPositionMarker.setIcon((BitmapDescriptorFactory.fromResource(R.mipmap.ic_location_3)));
+        userPositionMarker.setIcon((BitmapDescriptorFactory.fromResource(R.drawable.ic_location_3)));
         userPositionMarker.setTitle(title);
     }
 
@@ -192,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void setFloatingActionButton() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_my_location_black_24dp);
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -209,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    public void startAnotherActivity(Class<?> activity) {
+    private void startAnotherActivity(Class<?> activity) {
         Intent intent = new Intent(this, activity);
         startActivity(intent);
     }
